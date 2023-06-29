@@ -33,28 +33,53 @@ export const createUserPersonal = async (req, res) => {
 };
 
 export const deleteUserPersonal = async (req, res) => {
-  const [result] = await pool.query(
-    "DELETE FROM users_personal WHERE id = ?", [req.params.id]
-  )
+  const [result] = await pool.query("DELETE FROM users_personal WHERE id = ?", [
+    req.params.id,
+  ]);
   if (result.affectedRows <= 0)
-  return res.status(404).json({
-    message: "User not found",
-  })
+    return res.status(404).json({
+      message: "User not found",
+    });
 
-res.sendStatus(204);
-}
+  res.sendStatus(204);
+};
 
 export const updateUserPersonal = async (req, res) => {
-    const {id} = req.params
-    const {user, password} = req.body
-    
-    const [result] = await pool.query('UPDATE users_personal SET user = IFNULL(?, user), password = IFNULL(?, password) WHERE id = ?', [user, password, id])
+  const { id } = req.params;
+  const { user, password } = req.body;
 
-    if (result.affectedRows === 0) return res.status(404).json({
-        message: "User not found"
-    })
+  const [result] = await pool.query(
+    "UPDATE users_personal SET user = IFNULL(?, user), password = IFNULL(?, password) WHERE id = ?",
+    [user, password, id]
+  );
 
-    const [rows] = await pool.query('SELECT * FROM users_personal WHERE id = ?', [id])
+  if (result.affectedRows === 0)
+    return res.status(404).json({
+      message: "User not found",
+    });
 
-    res.json(rows[0])
-}
+  const [rows] = await pool.query("SELECT * FROM users_personal WHERE id = ?", [
+    id,
+  ]);
+
+  res.json(rows[0]);
+};
+
+export const validateUserPersonal = async (req, res) => {
+  const { user, password } = req.body;
+
+  const [rows] = await pool.query(
+    "SELECT * FROM users_personal WHERE user = ? AND password = ?",
+    [user, password]
+  );
+
+  if (rows.length <= 0) {
+    return res.status(401).json({
+      message: "Invalid username or password",
+    });
+  }
+
+  res.json({
+    message: "Authentication successful",
+  });
+};
