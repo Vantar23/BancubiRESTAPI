@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import usersPersonalRoutes from "./routes/users_personal.routes.js";
+import usersPadresRoutes from "./routes/users_padres.routes.js";
 import indexRoutes from "./routes/index.routes.js";
 
 import './config.js';
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(indexRoutes);
 
 app.use('/api', usersPersonalRoutes);
+app.use('/api', usersPadresRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({
